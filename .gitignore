@@ -1,0 +1,16 @@
+# Node.js
+node_modules/
+
+# Env files
+.env
+
+# Build outputs
+/dist
+/build
+
+# macOS
+.DS_Store
+
+# Python cache
+*.pyc
+__pycache__/
