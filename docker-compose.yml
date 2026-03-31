@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  web:
+    image: web-image
+    ports:
+      - '3000:3000'
+
+  backend:
+    image: backend-image
+    ports:
+      - '8000:8000'
