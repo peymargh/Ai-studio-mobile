@@ -1,0 +1,132 @@
+import gradio as gr
+import torch
+from PIL import Image
+import numpy as np
+import cv2
+import os
+import tempfile
+from diffusers import StableDiffusionPipeline
+import subprocess
+
+# Mobile-optimized theme
+css = """
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+    margin: 0;
+    padding: 0;
+}
+.container { 
+    max-width: 100%; 
+    padding: 10px; 
+}
+.gr-button { 
+    font-size: 16px; 
+    padding: 12px;
+    width: 100%;
+    margin: 5px 0;
+}
+.gr-tab {
+    font-size: 14px;
+}
+"""
+
+title = "🎬 AI Studio Mobile"
+description = "Mobile-optimized AI tools for face swapping, voice cloning, image generation & more!"
+
+def create_interface():
+    with gr.Blocks(css=css, title=title, theme=gr.themes.Soft()) as app:
+        gr.Markdown(f"# {title}")
+        gr.Markdown(description)
+        
+        with gr.Tabs():
+            # Face Swap Tab
+            with gr.TabItem("🔄 Face Swap"):
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        face_image = gr.Image(label="Face Image", type="pil")
+                        target_image = gr.Image(label="Target Image", type="pil")
+                        swap_btn = gr.Button("Swap Faces", variant="primary")
+                    with gr.Column(scale=1):
+                        result_image = gr.Image(label="Result")
+                
+                gr.Markdown("### Video Face Swap")
+                video_input = gr.Video(label="Input Video")
+                video_face = gr.Image(label="Face to Swap", type="pil")
+                video_swap_btn = gr.Button("Swap Video Faces", variant="primary")
+                video_output = gr.Video(label="Output Video")
+            
+            # Voice Cloning Tab
+            with gr.TabItem("🎤 Voice Clone"):
+                with gr.Row():
+                    with gr.Column():
+                        voice_audio = gr.Audio(label="Voice Sample", type="filepath")
+                        text_input = gr.Textbox(label="Text to Speak", lines=3, placeholder="Enter text here...")
+                        clone_btn = gr.Button("Generate Speech", variant="primary")
+                    with gr.Column():
+                        cloned_voice = gr.Audio(label="Cloned Voice")
+            
+            # Image Generation Tab
+            with gr.TabItem("🎨 Image Gen"):
+                with gr.Row():
+                    with gr.Column():
+                        prompt = gr.Textbox(label="Prompt", placeholder="A beautiful landscape...")
+                        neg_prompt = gr.Textbox(label="Negative Prompt", placeholder="blurry, bad quality...")
+                        gen_btn = gr.Button("Generate", variant="primary")
+                    with gr.Column():
+                        generated_img = gr.Image(label="Generated Image")
+            
+            # Voice Changer Tab
+            with gr.TabItem("🎭 Voice Changer"):
+                with gr.Row():
+                    with gr.Column():
+                        input_audio = gr.Audio(label="Input Audio", type="filepath")
+                        voice_style = gr.Dropdown(["robot", "deep", "high", "alien"], label="Voice Style")
+                        change_btn = gr.Button("Change Voice", variant="primary")
+                    with gr.Column():
+                        changed_voice = gr.Audio(label="Changed Voice")
+
+        # Event handlers
+        swap_btn.click(fn=swap_faces, inputs=[face_image, target_image], outputs=result_image)
+        video_swap_btn.click(fn=swap_video_faces, inputs=[video_input, video_face], outputs=video_output)
+        clone_btn.click(fn=clone_voice, inputs=[voice_audio, text_input], outputs=cloned_voice)
+        gen_btn.click(fn=generate_image, inputs=[prompt, neg_prompt], outputs=generated_img)
+        change_btn.click(fn=change_voice, inputs=[input_audio, voice_style], outputs=changed_voice)
+    
+    return app
+
+# Placeholder functions with basic logic
+def swap_faces(face_img, target_img):
+    if face_img is None or target_img is None:
+        return None
+    # Simple overlay for demo - you'll implement proper face swapping
+    result = target_img.copy()
+    face_resized = face_img.resize((100, 100))
+    result.paste(face_resized, (50, 50))
+    return result
+
+def swap_video_faces(video_path, face_img):
+    if video_path is None or face_img is None:
+        return None
+    return video_path
+
+def clone_voice(voice_sample, text):
+    if voice_sample is None or not text:
+        return None
+    # Return a placeholder audio
+    return voice_sample
+
+def generate_image(prompt, neg_prompt):
+    if not prompt:
+        return None
+    # Simple placeholder - you'll implement proper image generation
+    img = Image.new('RGB', (512, 512), color='blue')
+    return img
+
+def change_voice(audio_path, style):
+    if audio_path is None:
+        return None
+    return audio_path
+
+if __name__ == "__main__":
+    app = create_interface()
+    app.launch(server_name="0.0.0.0", server_port=7860)
