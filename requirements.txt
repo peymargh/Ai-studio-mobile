@@ -1,0 +1,15 @@
+torch
+torchvision
+torchaudio
+transformers
+diffusers
+accelerate
+opencv-python
+mediapipe
+numpy
+Pillow
+scipy
+gradio>=4.0
+fastapi
+uvicorn
+python-multipart
